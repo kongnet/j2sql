@@ -138,12 +138,12 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function() {
 			assert.strictEqual(obj[0].id,rs[0].id);
 			obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
 			assert.strictEqual(obj[1][0].id,rs[0].id);
-			/*obj = yield db.test.R({idx:1001},{},{},1).exec();
+			obj = yield db.test.R({idx:1001},{},{},1).exec();
 			assert.strictEqual(obj,-1);
 			obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
 			assert.strictEqual(obj[1][0].id,rs[0].id);
 			obj = yield db.test.R({idx:1001},{},{},1).exec(true);
-			assert.strictEqual(obj,-1);*/
+			assert.strictEqual(obj,-1);/**/
 		});
 
 
