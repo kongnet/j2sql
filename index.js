@@ -72,7 +72,7 @@ let dbOpt = function(tbName) {
             if (type === 'update') {
               _joinStr = '=';
             }
-            if (typeof o[i] == 'undefined') {
+            if (!o[i]) {
               //NOTICE: 不能严格等于
               _item = `${i} ${_joinStr} NULL`;
               break;
