@@ -4,6 +4,8 @@ node_js:
   - stable
 services:
   - mysql
+env:
+	-NODE_ENV:test
 before_script:
   - mysql -e 'create database test;'
 after_script:
