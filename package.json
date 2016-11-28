@@ -16,7 +16,7 @@
   "dependencies": {
     "meeko": "*",
     "mysql": "*",
-    "co": "*",
+    "hprose": "*",
     "co-mysql": "*"
   },
   "devDependencies": {

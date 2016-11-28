@@ -9,15 +9,14 @@ var configObj = {
 		zc: {
 			inHost: '127.0.0.1',
 			port: 13100,
-			expireTime: 3600 * 24,
 			mysql: {
-				host: '127.0.0.1',
+				host: '172.16.0.174',
 				port: 3306,
 				pool: 1000,
 				timeout: 500000,
-				user: 'root',
-				password: '',
-				database: 'test',
+				user: 'zc_test',
+				password: 'zc_test2016',
+				database: 'zc_test',
 				multipleStatements: true
 			}
 		}

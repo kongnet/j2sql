@@ -1,10 +1,6 @@
 'use strict';
-var Config = require('../config');
-var $ = require('meeko');
-var mysql = require('./mysql');
-var co = require('co');
-
-let dbName = Config.zc.mysql.database || 'test';
+let $ = require('meeko');
+let co = require('hprose').co;
 
 let dbOpt = function(tbName) {
   let me = this;
@@ -30,7 +26,7 @@ let dbOpt = function(tbName) {
         r = yield mysql.query(sql);
         return r;
       } catch (e) {
-        yield mysql.query(`rollback;`);
+        yield mysql.query('rollback;');
         let err = e.toString();
         /'(.+)'/gm.test(err);
         let light = RegExp.$1;
@@ -59,7 +55,7 @@ let dbOpt = function(tbName) {
       switch (typeof o[i]) {
         case 'string':
         {
-          let _preStr = `'`;
+          let _preStr = '\'';
           /^}}(.+){{$/g.test(o[i]) && (_preStr = '');
           _item = `${i}=${_preStr}${_preStr ? o[i] : RegExp.$1}${_preStr}`;
           break;
@@ -77,6 +73,7 @@ let dbOpt = function(tbName) {
               _joinStr = '=';
             }
             if (o[i] == undefined) {
+              //NOTICE: 不能严格等于
               _item = `${i} ${_joinStr} NULL`;
               break;
             }
@@ -122,7 +119,7 @@ let dbOpt = function(tbName) {
     let orderStr = '';
     let limitStr = +d;
     for (let i in c) {
-      order.push(i + ` ${(+c[i]) == -1 ? 'desc' : 'asc'}`);
+      order.push(i + ` ${(+c[i]) === -1 ? 'desc' : 'asc'}`);
     }
     orderStr = order.join(', ');
     for (let i in b) {
@@ -216,13 +213,26 @@ let dbOpt = function(tbName) {
   return me;
 };
 
-function getDB() {
-  $.log(`--> DB Obj Init start...`);
+function getDB(dbObj) {
+  let dbName = dbObj.database || 'test';
+
+  let mysqlWrapper = require('co-mysql'),
+    Mysql = require('mysql');
+  let pool = Mysql.createPool(dbObj),
+    mysql = mysqlWrapper(pool);
+  pool.on('connection', function() {
+    $.log(`<-- Mysql [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
+  });
+  pool.on('enqueue', function() {
+    $.log('<-- mysql pool enqueue!');
+  });
+
+  $.log('--> DB Obj Init start...');
   let _r,n = 0;
   let db = co(function*() {
     _r = yield mysql.query(`use ${dbName};show tables;`);
     _r[1].forEach(function(item){
-      let _name = item[`Tables_in_` + dbName];
+      let _name = item['Tables_in_' + dbName];
       db[_name] = {};
       $.ext(db[_name], new dbOpt(_name));
       n++;
@@ -233,7 +243,7 @@ function getDB() {
 
   return db;
 }
-module.exports = getDB();
+module.exports = getDB;
 
 /* $.log(
    db.test_zc_users.findOne({
