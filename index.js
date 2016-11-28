@@ -1,37 +1,37 @@
 'use strict';
 let $ = require('meeko');
 let co = require('hprose').co;
-
+let mysql = null;
 let dbOpt = function(tbName) {
-  let me = this;
-  let sql = '';
-  let _name = tbName;
-  me.get = function() {
-    //返回生成的sql
-    let s = sql;
-    sql = '';
-    return s;
-  };
-  me.cmd = function(s) {
-    let _tail = (~s.indexOf(';')) ? '' : ';';
-    sql += s + _tail;
-    return me;
-  };
-  me.exec = function*(ifTrans) {
-    let sql = me.get();
-    let r;
-    if (ifTrans) {
-      try {
-        sql = `begin;${sql}commit;`;
-        r = yield mysql.query(sql);
-        return r;
-      } catch (e) {
-        yield mysql.query('rollback;');
-        let err = e.toString();
-        /'(.+)'/gm.test(err);
-        let light = RegExp.$1;
-        //NOTICE:不要使用ctrl+alt+F 格式化代码
-        $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm,`${$.c.yellow}$1${$.c.none}`)}`);
+    let me = this;
+    let sql = '';
+    let _name = tbName;
+    me.get = function() {
+      //返回生成的sql
+      let s = sql;
+      sql = '';
+      return s;
+    };
+    me.cmd = function(s) {
+      let _tail = (~s.indexOf(';')) ? '' : ';';
+      sql += s + _tail;
+      return me;
+    };
+    me.exec = function*(ifTrans) {
+        let sql = me.get();
+        let r;
+        if (ifTrans) {
+          try {
+            sql = `begin;${sql}commit;`;
+            r = yield mysql.query(sql);
+            return r;
+          } catch (e) {
+            yield mysql.query('rollback;');
+            let err = e.toString();
+            /'(.+)'/gm.test(err);
+            let light = RegExp.$1;
+            //NOTICE:不要使用ctrl+alt+F 格式化代码
+            $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm,`${$.c.yellow}$1${$.c.none}`)}`);
         $.log(`${$.c.green}Rollback${$.c.none}`);
         return -1;
       }
@@ -215,18 +215,16 @@ let dbOpt = function(tbName) {
 
 function getDB(dbObj) {
   let dbName = dbObj.database || 'test';
-
   let mysqlWrapper = require('co-mysql'),
     Mysql = require('mysql');
-  let pool = Mysql.createPool(dbObj),
-    mysql = mysqlWrapper(pool);
+  let pool = Mysql.createPool(dbObj);
+  mysql = mysqlWrapper(pool);//全局变量
   pool.on('connection', function() {
     $.log(`<-- Mysql [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
   });
   pool.on('enqueue', function() {
     $.log('<-- mysql pool enqueue!');
   });
-
   $.log('--> DB Obj Init start...');
   let _r,n = 0;
   let db = co(function*() {
@@ -240,43 +238,6 @@ function getDB(dbObj) {
   }).then(function(){
     $.log(`<-- DB [${$.c.yellow}${n}${$.c.none} tables] Obj Init finish...`);
   });
-
   return db;
 }
 module.exports = getDB;
-
-/* $.log(
-   db.test_zc_users.findOne({
-     'time': {'>=':123,'<':1000},'count(1)': 2,
-     z: /%123/g,y: null,x: 1,'id': true,
-     cell: '130',cTime: new Date(),ary: [1, 'x']
-   }, {cell: 1,'min(id)': 1 }, {a: 1,b: -1})
-
-   
-     select cell,min(id) from test_zc_users 
-     where time>=123 and time<1000 and count(1)=2 and z like '%123' 
-     and y is NULL and x=1 and id=true and cell='130' 
-     and cTime='2016-1-31 3:16:31' and ary in (1,"x") 
-     order by a asc ,b desc limit 1;
-   
-   ,
-   db.test_zc_users.find({},{'count(1)':1}),
-   db.test_zc_users.remove({
-     a: 'dd'
-   }),
-   db.test_zc_users.update({
-     a: 'dd',
-     b: null
-   }, {
-     o: '}}id*6{{',
-     x: null,
-     y: 'y',
-     z: 33
-   }),
-   db.test_zc_users.insert({
-     a: 'x',
-     b: 6,
-     c: new Date(),
-     d: '}}col1+col2{{'
-   })
-   )*/
