@@ -5,7 +5,11 @@ let assert = require('assert');
 let $ = require('meeko');
 let Config = require('../config.js');
 let db = require('../index')(Config.zc.mysql);
-
+let co = require('hprose').co;
+/*co(function*(){
+	yield $.tools.wait(1000);
+	$.log(yield db.test.cmd('select 1;').exec());
+})*/
 
 describe('mongoDB转MySQL增删改查基础的单元测试', function() {
 	before(function*() {
@@ -128,17 +132,19 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function() {
 			'name': [1, 'x', 3]
 		}).get());
 	});
-	/*	it('7.exec测试',function*(){
-			let rs = yield mysql.query('select id from test limit 1;');
+		it('7.exec测试',function*(){
+			let rs = yield db._mysql.query('select id from test limit 1;');
 			let obj = yield db.test.R({id:rs[0].id},{},{},1).exec();
+			assert.strictEqual(obj[0].id,rs[0].id);
+			/*obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
 			assert.strictEqual(obj[0].id,rs[0].id);
 			obj = yield db.test.R({idx:1001},{},{},1).exec();
 			assert.strictEqual(obj,-1);
 			obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
 			assert.strictEqual(obj[1][0].id,rs[0].id);
 			obj = yield db.test.R({idx:1001},{},{},1).exec(true);
-			assert.strictEqual(obj,-1);
-		});*/
+			assert.strictEqual(obj,-1);*/
+		});
 
 
 });

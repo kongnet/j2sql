@@ -235,6 +235,7 @@ function getDB(dbObj) {
       $.ext(db[_name], new dbOpt(_name));
       n++;
     });
+    db['_mysql'] = mysql;
   }).then(function(){
     $.log(`<-- DB [${$.c.yellow}${n}${$.c.none} tables] Obj Init finish...`);
   });
