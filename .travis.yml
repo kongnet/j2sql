@@ -7,6 +7,6 @@ services:
 env:
   - NODE_ENV=test
 before_script:
-  - mysql -e 'create database test;create TABLE test.test (id INT(11) NOT NULL);INSERT INTO test VALUES (1)'
+  - mysql -e 'create database test;use test;create TABLE test.test (id INT(11) NOT NULL);INSERT INTO test VALUES (1)'
 after_script:
   - npm run coveralls
