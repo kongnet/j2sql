@@ -2,6 +2,8 @@
 let $ = require('meeko');
 let co = require('hprose').co;
 let mysql = null;
+let pack = require('./package.json');
+
 let dbOpt = function(tbName) {
     let me = this;
     let sql = '';
@@ -220,7 +222,7 @@ function getDB(dbObj) {
   let pool = Mysql.createPool(dbObj);
   mysql = mysqlWrapper(pool);//全局变量
   pool.on('connection', function() {
-    $.log(`<-- Mysql [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
+    $.log(`<-- Mysql (${pack.version}) [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
   });
   pool.on('enqueue', function() {
     $.log('<-- mysql pool enqueue!');
