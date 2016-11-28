@@ -18,36 +18,36 @@ let dbOpt = function(tbName) {
       return me;
     };
     me.exec = function*(ifTrans) {
-        let sql = me.get();
-        let r;
-        if (ifTrans) {
-          try {
-            sql = `begin;${sql}commit;`;
-            r = yield mysql.query(sql);
-            return r;
-          } catch (e) {
-            yield mysql.query('rollback;');
-            let err = e.toString();
-            /'(.+)'/gm.test(err);
-            let light = RegExp.$1;
-            //NOTICE:不要使用ctrl+alt+F 格式化代码
-            $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm,`${$.c.yellow}$1${$.c.none}`)}`);
-        $.log(`${$.c.green}Rollback${$.c.none}`);
-        return -1;
+      let sql = me.get();
+      let r;
+      if (ifTrans) {
+        try {
+          sql = `begin;${sql}commit;`;
+          r = yield mysql.query(sql);
+          return r;
+        } catch (e) {
+          yield mysql.query(`rollback;`);
+          let err = e.toString();
+          /'(.+)'/gm.test(err);
+          let light = RegExp.$1;
+          //NOTICE:不要使用ctrl+alt+F 格式化代码
+          $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm,`${$.c.yellow}$1${$.c.none}`)}`);
+          $.log(`${$.c.green}Rollback${$.c.none}`);
+          return -1;
+        }
+      } else {
+        try {
+          return yield mysql.query(sql);
+        } catch (e) {
+          let err = e.toString();
+          /'([^']+)'/gm.test(err);
+          let light = RegExp.$1;
+          //NOTICE:不要使用ctrl+alt+F 格式化代码
+          $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('[^']+')/gm,`${$.c.yellow}$1${$.c.none}`)}`);
+          return -1;
+        }
       }
-    } else {
-      try {
-        return yield mysql.query(sql);
-      } catch (e) {
-        let err = e.toString();
-        /'([^']+)'/gm.test(err);
-        let light = RegExp.$1;
-        //NOTICE:不要使用ctrl+alt+F 格式化代码
-        $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('[^']+')/gm,`${$.c.yellow}$1${$.c.none}`)}`);
-        return -1;
-      }
-    }
-  };
+    };
   me.where = function(o, type) {
     let _item;
     let a = [];

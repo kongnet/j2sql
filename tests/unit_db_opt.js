@@ -8,8 +8,8 @@ let db = require('../index')(Config.zc.mysql);
 let co = require('hprose').co;
 /*co(function*(){
 	yield $.tools.wait(1000);
-	$.log(yield db.test.cmd('select 1;').exec());
-})*/
+	$.log(yield db.test.R({id:3},{},{},1).exec(true));
+});*/
 
 describe('mongoDB转MySQL增删改查基础的单元测试', function() {
 	before(function*() {
@@ -136,9 +136,9 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function() {
 			let rs = yield db._mysql.query('select id from test limit 1;');
 			let obj = yield db.test.R({id:rs[0].id},{},{},1).exec();
 			assert.strictEqual(obj[0].id,rs[0].id);
-			/*obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
-			assert.strictEqual(obj[0].id,rs[0].id);
-			obj = yield db.test.R({idx:1001},{},{},1).exec();
+			obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
+			assert.strictEqual(obj[1][0].id,rs[0].id);
+			/*obj = yield db.test.R({idx:1001},{},{},1).exec();
 			assert.strictEqual(obj,-1);
 			obj = yield db.test.R({id:rs[0].id},{},{},1).exec(true);
 			assert.strictEqual(obj[1][0].id,rs[0].id);
