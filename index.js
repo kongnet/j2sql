@@ -222,12 +222,12 @@ function getDB(dbObj) {
   let pool = Mysql.createPool(dbObj);
   mysql = mysqlWrapper(pool);//全局变量
   pool.on('connection', function() {
-    $.log(`<-- J2sql (${pack.version}) [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
+    $.log(`<-- J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
   });
   pool.on('enqueue', function() {
     $.log('<-- J2sql pool enqueue!');
   });
-  $.log('--> DB Obj Init start...');
+  $.log('--> J2sql Obj Init start...');
   let _r,n = 0;
   let db = co(function*() {
     _r = yield mysql.query(`use ${dbName};show tables;`);
@@ -239,7 +239,7 @@ function getDB(dbObj) {
     });
     db['_mysql'] = mysql;
   }).then(function(){
-    $.log(`<-- DB [${$.c.yellow}${n}${$.c.none} tables] Obj Init finish...`);
+    $.log(`<-- J2sql [${$.c.yellow}${n}${$.c.none} tables] Obj Init finish...`);
   });
   return db;
 }
