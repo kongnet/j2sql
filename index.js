@@ -222,10 +222,10 @@ function getDB(dbObj) {
   let pool = Mysql.createPool(dbObj);
   mysql = mysqlWrapper(pool);//全局变量
   pool.on('connection', function() {
-    $.log(`<-- Mysql (${pack.version}) [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
+    $.log(`<-- J2sql (${pack.version}) [${$.c.green}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`);
   });
   pool.on('enqueue', function() {
-    $.log('<-- mysql pool enqueue!');
+    $.log('<-- J2sql pool enqueue!');
   });
   $.log('--> DB Obj Init start...');
   let _r,n = 0;
