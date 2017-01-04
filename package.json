@@ -1,7 +1,7 @@
 {
-  "name": "meeko",
+  "name": "j2sql",
   "version": "1.5.3",
-  "description": "meeko自用函数",
+  "description": "j2sql自用函数",
   "main": "index.js",
   "scripts": {
     "push": "npm version patch && npm publish . && git push",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kongnet/meeko.git"
+    "url": "https://github.com/kongnet/j2sql.git"
   },
   "author": "Kongnet <9601698@qq.com>",
   "license": "MIT",
