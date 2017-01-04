@@ -1,24 +1,20 @@
 {
-  "name": "j2sql",
-  "version": "0.4.0",
-  "description": "j2sql自用函数",
+  "name": "meeko",
+  "version": "1.5.2",
+  "description": "meeko自用函数",
   "main": "index.js",
   "scripts": {
+    "push": "npm version patch && npm publish . && git push",
     "test": "mocha -r co-mocha --reporter spec --timeout 100000 --recursive tests/",
     "coveralls": "istanbul cover _mocha -- -r co-mocha --reporter spec --timeout 100000 --recursive tests/ && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kongnet/j2sql.git"
+    "url": "https://github.com/kongnet/meeko.git"
   },
   "author": "Kongnet <9601698@qq.com>",
   "license": "MIT",
-  "dependencies": {
-    "meeko": "*",
-    "mysql": "*",
-    "hprose": "*",
-    "co-mysql": "*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "mocha": "*",
     "co-mocha": "*",
@@ -51,7 +47,7 @@
         "single"
       ],
       "semi": [
-        1,
+        2,
         "always"
       ],
       "space-infix-ops": 1,

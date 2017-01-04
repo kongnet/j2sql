@@ -28,7 +28,7 @@ let dbOpt = function(tbName) {
           r = yield mysql.query(sql);
           return r;
         } catch (e) {
-          yield mysql.query(`rollback;`);
+          yield mysql.query('rollback;');
           let err = e.toString();
           /'(.+)'/gm.test(err);
           let light = RegExp.$1;
