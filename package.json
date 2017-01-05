@@ -14,7 +14,9 @@
   },
   "author": "Kongnet <9601698@qq.com>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "meeko": "*"
+  },
   "devDependencies": {
     "mocha": "*",
     "co-mocha": "*",
