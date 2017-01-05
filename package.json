@@ -36,9 +36,6 @@
       "es6": true,
       "mocha": true
     },
-    "globals": {
-      "angular": true
-    },
     "rules": {
       "no-unused-vars": 1,
       "camelcase": 0,
