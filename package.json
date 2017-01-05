@@ -16,7 +16,9 @@
   "license": "MIT",
   "dependencies": {
     "meeko": "*",
-    "hprose": "*"
+    "hprose": "*",
+    "mysql": "*",
+    "co-mysql": "*"
   },
   "devDependencies": {
     "mocha": "*",
