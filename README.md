@@ -15,7 +15,7 @@ mongo like  operation for mysql
 # 第一步
 
 ```
-let db = require('../index')(yourmysqlConfig);
+let db = require('j2sql')(yourmysqlConfig);
 ```
 
 ### yourmysqlConfig
