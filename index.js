@@ -57,7 +57,8 @@ let DbOpt = function (tbName) {
       switch (typeof o[i]) {
         case 'string':
           {
-            let _preStr = '\''(/^}}(.+){{$/g).test(o[i]) && (_preStr = '')
+            let _preStr = '\''
+            new RegExp('^}}(.+){{$', 'g').test(o[i]) && (_preStr = '')
             _item = `${i}=${_preStr}${_preStr ? o[i] : RegExp.$1}${_preStr}`
             break
           }
