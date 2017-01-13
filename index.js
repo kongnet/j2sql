@@ -29,7 +29,8 @@ let DbOpt = function (tbName) {
         return r
       } catch (e) {
         yield mysql.query('rollback;')
-        let err = e.toString()(/'(.+)'/gm).test(err)
+        let err = e.toString()
+        new RegExp('(.+)', 'gm').test(err)
         let light = RegExp.$1
             // NOTICE:不要使用ctrl+alt+F 格式化代码
         $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm, `${$.c.yellow}$1${$.c.none}`)}`)
@@ -40,7 +41,8 @@ let DbOpt = function (tbName) {
       try {
         return yield mysql.query(sql)
       } catch (e) {
-        let err = e.toString()(/'([^']+)'/gm).test(err)
+        let err = e.toString()
+        new RegExp('\'([^\']+)\'', 'gm').test(err)
         let light = RegExp.$1
           // NOTICE:不要使用ctrl+alt+F 格式化代码
         $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('[^']+')/gm, `${$.c.yellow}$1${$.c.none}`)}`)
