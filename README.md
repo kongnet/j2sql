@@ -6,6 +6,8 @@ mongo like  operation for mysql
 
 [![NPM](https://nodei.co/npm/j2sql.png?downloads=true&stars=true)](https://nodei.co/npm/j2sql/)
 
+[![Standard - JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+
 ---
 
 **npm install j2sql**
