@@ -6,17 +6,17 @@ let assert = require('assert')
 let $ = require('meeko')
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
-/* let co = require('hprose').co
- co(function*(){
-  yield $.tools.wait(1000);
-  $.log(yield db.test.R({id:3},{},{},1).exec(true));
-}); */
+  /* let co = require('hprose').co
+   co(function*(){
+    yield $.tools.wait(1000);
+    $.log(yield db.test.R({id:3},{},{},1).exec(true));
+  }); */
 
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
-  before(function*() {
+  before(function* () {
     yield $.tools.wait(1000)
   })
-  it('1.find&findone测试', function*() {
+  it('1.find&findone测试', function* () {
     assert.strictEqual(db.test.find().get(), 'select * from test;')
     assert.strictEqual(db.test.R().get(), 'select * from test;')
     assert.strictEqual(db.test.select().get(), 'select * from test;')
@@ -46,7 +46,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), 'select * from test where cell=true;')
   })
 
-  it('2.remove测试', function*() {
+  it('2.remove测试', function* () {
     assert.strictEqual(db.test.remove().get(), '[Empty!!]')
     assert.strictEqual(db.test.remove({}, 1).get(), 'delete from test;')
     assert.strictEqual(db.test.D({}, 1).get(), 'delete from test;')
@@ -59,7 +59,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), 'delete from test where time>=123 and time<1000;')
   })
 
-  it('3.update测试', function*() {
+  it('3.update测试', function* () {
     assert.strictEqual(db.test.U({
       id: 11
     }).get(), '[Empty!!]')
@@ -87,7 +87,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), 'update test set cell=1,min(id)=1 where time>=123 and time<1000;')
   })
 
-  it('4.insert测试', function*() {
+  it('4.insert测试', function* () {
     assert.strictEqual(db.test.insert().get(), '[Empty!!]')
     assert.strictEqual(db.test.insert({
       cell: 1,
@@ -97,12 +97,20 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       cell: 1,
       'min(id)': 1
     }).get(), 'insert into test (cell,min(id)) values (1,1);')
+    assert.strictEqual(db.test.C({
+      cell: 'x',
+      'min(id)': 1
+    }).get(), 'insert into test (cell,min(id)) values (\'x\',1);')
+    assert.strictEqual(db.test.C({
+      cell: 'x=1',
+      'min(id)': 1
+    }).get(), 'insert into test (cell,min(id)) values (\'x=1\',1);')
   })
-  it('5.cmd测试', function*() {
+  it('5.cmd测试', function* () {
     assert.strictEqual(db.test.cmd('show databases;').get(), 'show databases;')
     assert.strictEqual(db.test.cmd('show databases').get(), 'show databases;')
   })
-  it('6.特殊类型函数条件测试', function*() {
+  it('6.特殊类型函数条件测试', function* () {
     assert.strictEqual(db.test.R({
       'ax(id)': 1
     }).get(), 'select * from test where ax(id)=1;')
@@ -130,17 +138,28 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'name': [1, 'x', 3]
     }).get())
   })
-  it('7.exec测试', function*() {
+  it('7.exec测试', function* () {
     let rs = yield db._mysql.query('select id from test limit 1;')
-    let obj = yield db.test.R({id: rs[0].id}, {}, {}, 1).exec()
+    let obj = yield db.test.R({
+      id: rs[0].id
+    }, {}, {}, 1).exec()
     assert.strictEqual(obj[0].id, rs[0].id)
-    obj = yield db.test.R({id: rs[0].id}, {}, {}, 1).exec(true)
+    obj = yield db.test.R({
+      id: rs[0].id
+    }, {}, {}, 1).exec(true)
     assert.strictEqual(obj[1][0].id, rs[0].id)
-    obj = yield db.test.R({idx: 1001}, {}, {}, 1).exec()
+    obj = yield db.test.R({
+      idx: 1001
+    }, {}, {}, 1).exec()
     assert.strictEqual(obj, -1)
-    obj = yield db.test.R({id: rs[0].id}, {}, {}, 1).exec(true)
+    obj = yield db.test.R({
+      id: rs[0].id
+    }, {}, {}, 1).exec(true)
     assert.strictEqual(obj[1][0].id, rs[0].id)
-    obj = yield db.test.R({idx: 1001}, {}, {}, 1).exec(true)
-    assert.strictEqual(obj, -1)/**/
+    obj = yield db.test.R({
+      idx: 1001
+    }, {}, {}, 1).exec(true)
+    assert.strictEqual(obj, -1) /**/
   })
 })
+

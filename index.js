@@ -173,7 +173,9 @@ let DbOpt = function (tbName) {
     colsStr = cols.join(',')
     values = me.where(a, 'update')
     for (let i = 0; i < values.length; i++) {
-      vals.push(values[i].split('=')[1])
+      let a = values[i].split('=')
+      a.shift(0)
+      vals.push(a.join('='))
     }
     valuesStr = vals.join(',')
     if (!colsStr && !valuesStr) {
