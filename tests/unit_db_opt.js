@@ -6,12 +6,12 @@ let assert = require('assert')
 let $ = require('meeko')
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
+let co = require('hprose').co
   /* let co = require('hprose').co
    co(function*(){
     yield $.tools.wait(1000);
     $.log(yield db.test.R({id:3},{},{},1).exec(true));
   }); */
-
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
   before(function* () {
     yield $.tools.wait(1000)
