@@ -99,7 +99,6 @@ let DbOpt = function (tbName) {
             break
           }
         default:
-          break
       }
       // $.log(typeof o[i],o[i] instanceof RegExp)
       a.push(_item)
