@@ -6,12 +6,13 @@ let assert = require('assert')
 let $ = require('meeko')
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
-let co = require('hprose').co
-  /* let co = require('hprose').co
-   co(function*(){
-    yield $.tools.wait(1000);
-    $.log(yield db.test.R({id:3},{},{},1).exec(true));
-  }); */
+ /* let co = require('hprose').co
+   co(function* () {
+     yield $.tools.wait(1000);
+     let r = db.test.R({"aaa->'$[1].\"2\"'":"22"}).get();
+     r = db.test.U({},{aaa:'json_set(aaa,\'$[0]."1"\',18)'},1).get()
+     $.log(r)
+   }); */
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
   before(function* () {
     yield $.tools.wait(1000)
@@ -102,6 +103,14 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'min(id)': 1
     }).get(), 'insert into test (cell,min(id)) values (\'x\',1);')
     assert.strictEqual(db.test.C({
+      cell: 'md5(x)',
+      'min(id)': 1
+    }).get(), 'insert into test (cell,min(id)) values (md5(x),1);')
+    assert.strictEqual(db.test.C({
+      cell: '\'md5(x)\'',
+      'min(id)': 1
+    }).get(), 'insert into test (cell,min(id)) values (\'md5(x)\',1);')
+    assert.strictEqual(db.test.C({
       cell: 'x=1',
       'min(id)': 1
     }).get(), 'insert into test (cell,min(id)) values (\'x=1\',1);')
@@ -115,8 +124,11 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'ax(id)': 1
     }).get(), 'select * from test where ax(id)=1;')
     assert.strictEqual(db.test.R({
-      'md5': '}}md5(id){{'
-    }).get(), 'select * from test where md5=md5(id);')
+      'md5': 'md5(id)+max(id)'
+    }).get(), 'select * from test where md5=md5(id)+max(id);')
+    assert.strictEqual(db.test.R({
+      'md5': '\'md5(id)\''
+    }).get(), 'select * from test where md5=\'md5(id)\';')
     assert.strictEqual(db.test.R({
       'md5': null
     }).get(), 'select * from test where md5 is NULL;')

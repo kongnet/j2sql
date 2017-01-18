@@ -58,8 +58,8 @@ let DbOpt = function (tbName) {
         case 'string':
           {
             let _preStr = '\''
-            new RegExp('^}}(.+){{$', 'g').test(o[i]) && (_preStr = '')
-            _item = `${i}=${_preStr}${_preStr ? o[i] : RegExp.$1}${_preStr}`
+            ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
+            _item = `${i}=${_preStr}${o[i]}${_preStr}`
             break
           }
         case 'number':

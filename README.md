@@ -44,7 +44,7 @@ mysql: {
 * 5.cmd测试
 * 6.特殊类型函数条件
 * 7.exec 执行语句,事务
-
+* 8.json column ready :>
 ####具体用法都在测试文档中 
 Enjoy :)
 
