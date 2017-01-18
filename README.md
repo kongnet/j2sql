@@ -40,6 +40,7 @@ mysql: {
 * 2.remove
 * 3.update
 * 4.insert
+* 4-1.不重复insert
 * 5.cmd测试
 * 6.特殊类型函数条件
 * 7.exec 执行语句,事务

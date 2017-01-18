@@ -184,7 +184,13 @@ let DbOpt = function (tbName) {
       if (!uniqCol) {
         sql += `insert into ${_name} (${colsStr}) values (${valuesStr});`
       } else {
-        sql += `insert into ${_name} (${colsStr}) select ${valuesStr} from ${_name} WHERE NOT EXISTS(SELECT ${uniqCol} FROM ${_name} WHERE ${uniqCol} = '${a[uniqCol]}') limit 1`
+        let _v = me.where({
+          'c': a[uniqCol]
+        })
+        let _a = _v[0].split('=')
+        _a.shift(0)
+        let _c = _a.join('=')
+        sql += `insert into ${_name} (${colsStr}) select ${valuesStr} from ${_name} WHERE NOT EXISTS(SELECT ${uniqCol} FROM ${_name} WHERE ${uniqCol} = ${_c}) limit 1;`
       }
     }
     return me
@@ -209,7 +215,6 @@ let DbOpt = function (tbName) {
   }
   return me
 }
-
 function getDB (dbObj) {
   let dbName = dbObj.database || 'test'
   let [mysqlWrapper, Mysql] = [require('co-mysql'), require('mysql')]

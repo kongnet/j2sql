@@ -6,13 +6,21 @@ let assert = require('assert')
 let $ = require('meeko')
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
- /* let co = require('hprose').co
-   co(function* () {
-     yield $.tools.wait(1000);
-     let r = db.test.R({"aaa->'$[1].\"2\"'":"22"}).get();
-     r = db.test.U({},{aaa:'json_set(aaa,\'$[0]."1"\',18)'},1).get()
-     $.log(r)
-   }); */
+/* let co = require('hprose').co
+ co(function* () {
+  yield $.tools.wait(1000);
+  let r = db.test.R({
+    "aaa->'$[1].\"2\"'": "22"
+  }).get();
+  r = db.test.U({}, {
+    aaa: 'json_set(aaa,\'$[0]."1"\',18)'
+  }, 1).get()
+  r = db.test.insert({
+    cell: '1',
+    'phone': 1
+  }, 'phone').get()
+  $.log(r)
+}); */
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
   before(function* () {
     yield $.tools.wait(1000)
@@ -115,6 +123,16 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'min(id)': 1
     }).get(), 'insert into test (cell,min(id)) values (\'x=1\',1);')
   })
+  it('4-1.insert唯一插入测试', function* () {
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'phone': 1
+    }, 'phone').get(), 'insert into test (cell,phone) select \'1\',1 from test WHERE NOT EXISTS(SELECT phone FROM test WHERE phone = 1) limit 1;')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'phone': 1
+    }, 'cell').get(), 'insert into test (cell,phone) select \'1\',1 from test WHERE NOT EXISTS(SELECT cell FROM test WHERE cell = \'1\') limit 1;')
+  })
   it('5.cmd测试', function* () {
     assert.strictEqual(db.test.cmd('show databases;').get(), 'show databases;')
     assert.strictEqual(db.test.cmd('show databases').get(), 'show databases;')
@@ -174,4 +192,3 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     assert.strictEqual(obj, -1) /**/
   })
 })
-
