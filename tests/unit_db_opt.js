@@ -7,18 +7,19 @@ let $ = require('meeko')
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
 /* let co = require('hprose').co
- co(function* () {
+co(function* () {
   yield $.tools.wait(1000);
   let r = db.test.R({
-    "aaa->'$[1].\"2\"'": "22"
+    "aaa->'$[1].\"2\"'": "22",
+    'x': 1
   }).get();
   r = db.test.U({}, {
-    aaa: 'json_set(aaa,\'$[0]."1"\',18)'
+    aaa: 'json_set(aaa,\'$[0]."1"\\\',18)'
   }, 1).get()
   r = db.test.insert({
     cell: '1',
-    'phone': 1
-  }, 'phone').get()
+    'd1': new Date()
+  }).get()
   $.log(r)
 }); */
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
@@ -122,6 +123,33 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       cell: 'x=1',
       'min(id)': 1
     }).get(), 'insert into test (cell,min(id)) values (\'x=1\',1);')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'd1': new Date('2017-01-18T12:20:57.240Z')
+    }).get(), 'insert into test (cell,d1) values (\'1\', "2017-01-18T12:20:57.240Z");')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'd1': null
+    }).get(), 'insert into test (cell,d1) values (\'1\', NULL);')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'd1': undefined
+    }).get(), 'insert into test (cell,d1) values (\'1\', NULL);')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'd1': [1, 4]
+    }).get(), 'insert into test (cell,d1) values (\'1\', \'[1,4]\');')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'd1': {
+        a: 1,
+        b: '2'
+      }
+    }).get(), 'insert into test (cell,d1) values (\'1\', \'{"a":1,"b":"2"}\');')
+    assert.strictEqual(db.test.insert({
+      cell: '1',
+      'd1': /kong+/g
+    }).get(), 'insert into test (cell,d1) values (\'1\', \'{}\');')
   })
   it('4-1.insert唯一插入测试', function* () {
     assert.strictEqual(db.test.insert({

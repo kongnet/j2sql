@@ -70,13 +70,14 @@ let DbOpt = function (tbName) {
           break
         case 'object':
           {
-            let _joinStr = 'is'
             if (type === 'update') {
-              _joinStr = '='
+              let _preStr = o[i] instanceof Date ? '' : '\''
+              _item = `${i} = ${o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'}`
+              break
             }
             if (!o[i]) {
               // NOTICE: 不能严格等于
-              _item = `${i} ${_joinStr} NULL`
+              _item = `${i} is NULL`
               break
             }
             if (o[i] instanceof Date) {
@@ -98,10 +99,14 @@ let DbOpt = function (tbName) {
             _item = _objAry.join(' and ')
             break
           }
+        case 'undefined':
+          _item = `${i} = NULL`
+          break
         default:
       }
       // $.log(typeof o[i],o[i] instanceof RegExp)
       a.push(_item)
+      $.log(_item)
     }
     return a
   }
