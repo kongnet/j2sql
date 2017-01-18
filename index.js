@@ -219,7 +219,7 @@ function getDB (dbObj) {
     $.log(`<-- J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`)
   })
   pool.on('enqueue', function () {
-    $.log('<-- J2sql pool enqueue!')
+    // $.log('<-- J2sql pool enqueue!')
   })
   $.log('--> J2sql Obj Init start...')
   let [_r, n] = [0, 0]
