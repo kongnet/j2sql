@@ -104,9 +104,7 @@ let DbOpt = function (tbName) {
           break
         default:
       }
-      // $.log(typeof o[i],o[i] instanceof RegExp)
       a.push(_item)
-      $.log(_item)
     }
     return a
   }
