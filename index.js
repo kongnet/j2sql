@@ -230,7 +230,6 @@ function getDB (dbObj) {
   let [_r, n] = [0, 0]
   let db = co(function * () {
     _r = yield mysql.query(`use ${dbName};show tables;`)
-    $.log(`use ${dbName};show tables;`)
     _r[1].forEach(function (item) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
