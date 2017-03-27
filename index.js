@@ -1,10 +1,9 @@
 'use strict'
 let $ = require('meeko')
 let co = require('hprose').co
-let mysql = null
 let pack = require('./package.json')
 
-let DbOpt = function (tbName) {
+let DbOpt = function (mysql, tbName) {
   let me = this
   let sql = ''
   let _name = tbName
@@ -19,7 +18,7 @@ let DbOpt = function (tbName) {
     sql += s + _tail
     return me
   }
-  me.exec = function*(ifTrans) {
+  me.exec = function * (ifTrans) {
     let sql = me.get()
     let r
     if (ifTrans) {
@@ -220,7 +219,7 @@ function getDB (dbObj) {
   let dbName = dbObj.database || 'test'
   let [mysqlWrapper, Mysql] = [require('co-mysql'), require('mysql')]
   let pool = Mysql.createPool(dbObj)
-  mysql = mysqlWrapper(pool)// 全局变量
+  let mysql = mysqlWrapper(pool)
   pool.on('connection', function () {
     $.log(`<-- J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`)
   })
@@ -229,12 +228,13 @@ function getDB (dbObj) {
   })
   $.log('--> J2sql Obj Init start...')
   let [_r, n] = [0, 0]
-  let db = co(function*() {
+  let db = co(function * () {
     _r = yield mysql.query(`use ${dbName};show tables;`)
+    $.log(`use ${dbName};show tables;`)
     _r[1].forEach(function (item) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
-      $.ext(db[_name], new DbOpt(_name))
+      $.ext(db[_name], new DbOpt(mysql, _name))
       n++
     })
     db['_mysql'] = mysql
