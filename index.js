@@ -7,6 +7,13 @@ let DbOpt = function (mysql, tbName) {
   let me = this
   let sql = ''
   let _name = tbName
+  function _log (sql, ifShowSql) {
+    if (ifShowSql) {
+      $.option.logTime = false
+      $.log(sql)
+      $.option.logTime = true
+    }
+  }
   me.get = function () {
       // 返回生成的sql
     let s = sql
@@ -18,12 +25,13 @@ let DbOpt = function (mysql, tbName) {
     sql += s + _tail
     return me
   }
-  me.exec = function * (ifTrans) {
+  me.exec = function * (ifTrans, ifShowSql) {
     let sql = me.get()
     let r
     if (ifTrans) {
       try {
         sql = `begin;${sql}commit;`
+        _log(sql, ifShowSql)
         r = yield mysql.query(sql)
         return r
       } catch (e) {
@@ -38,6 +46,7 @@ let DbOpt = function (mysql, tbName) {
       }
     } else {
       try {
+        _log(sql, ifShowSql)
         return yield mysql.query(sql)
       } catch (e) {
         let err = e.toString()
@@ -228,7 +237,8 @@ function getDB (dbObj) {
   })
   $.log('--> J2sql Obj Init start...')
   let [_r, n] = [0, 0]
-  let db = co(function * () {
+  let db = {}
+  co(function * () {
     _r = yield mysql.query(`use ${dbName};show tables;`)
     _r[1].forEach(function (item) {
       let _name = item['Tables_in_' + dbName]
@@ -238,7 +248,7 @@ function getDB (dbObj) {
     })
     db['_mysql'] = mysql
   }).then(function () {
-    $.log(`<-- J2sql [${$.c.yellow}${n}${$.c.none} tables] Obj Init finish...`)
+    $.log(`<--- J2sql [${$.c.yellow}${n}${$.c.none} tables] Obj Init finish...`)
   })
   return db
 }
