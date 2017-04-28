@@ -39,7 +39,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     assert.strictEqual(db.test.find({}, {
       cell: 1,
       'min(id)': 1
-    }).get(), 'select cell,min(id) from test;')
+    }).get(), 'select `cell`,`min(id)` from test;')
     assert.strictEqual(db.test.find({}, {}, {
       a: 1,
       b: -1

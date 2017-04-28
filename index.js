@@ -153,7 +153,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     orderStr = order.join(', ')
     // if (b === 0) b = _columnFilter(b) //TODO: 列可见性加强
     for (let i in b) {
-      cols.push(i)
+      cols.push('`' + i + '`')
     }
     colsStr = cols.join(',')
     whereStr = me.where(a).join(' and ')
