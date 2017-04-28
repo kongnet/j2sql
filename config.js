@@ -10,7 +10,7 @@ var configObj = {
       inHost: '127.0.0.1',
       port: 13100,
       mysql: {
-        host: '172.16.0.174',
+        host: '172.16.2.174',
         port: 3306,
         pool: 1000,
         timeout: 500000,

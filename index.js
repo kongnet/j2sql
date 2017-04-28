@@ -3,10 +3,14 @@ let $ = require('meeko')
 let co = require('hprose').co
 let pack = require('./package.json')
 
-let DbOpt = function (mysql, tbName) {
+let DbOpt = function (mysql, tbName, field, exColumn) {
   let me = this
   let sql = ''
   let _name = tbName
+/*
+  TODO: 列可见性
+  let ex = exColumn || {'d_flag': 1, 'm_time': 1, 'w_state': 1, 'name': 1}
+  let tableField = field */
   function _log (sql, ifShowSql) {
     if (ifShowSql) {
       $.option.logTime = false
@@ -14,6 +18,20 @@ let DbOpt = function (mysql, tbName) {
       $.option.logTime = true
     }
   }
+/*
+
+ TODO: 列可见性
+  function _columnFilter (colObj) {
+    let o = {}
+    tableField.map(item => {
+      if (!ex[item]) o[item] = 1
+    })
+    for (let i in colObj) {
+      if (colObj[i] === 1 && ex[i] === 1) o[i] = 1
+    }
+
+    return o
+  } */
   me.get = function () {
       // 返回生成的sql
     let s = sql
@@ -133,6 +151,7 @@ let DbOpt = function (mysql, tbName) {
       order.push(i + ` ${(+c[i]) === -1 ? 'desc' : 'asc'}`)
     }
     orderStr = order.join(', ')
+    // if (b === 0) b = _columnFilter(b) //TODO: 列可见性加强
     for (let i in b) {
       cols.push(i)
     }
@@ -176,7 +195,7 @@ let DbOpt = function (mysql, tbName) {
     let colsStr = ''
     let valuesStr = ''
     for (let i in a) {
-      cols.push(i)
+      cols.push('`' + i + '`')
       values.push(a[i])
     }
     colsStr = cols.join(',')
@@ -226,6 +245,7 @@ let DbOpt = function (mysql, tbName) {
 }
 function getDB (dbObj) {
   let dbName = dbObj.database || 'test'
+  let exColumn = dbObj.exColumn
   let [mysqlWrapper, Mysql] = [require('co-mysql'), require('mysql')]
   let pool = Mysql.createPool(dbObj)
   let mysql = mysqlWrapper(pool)
@@ -243,7 +263,13 @@ function getDB (dbObj) {
     _r[1].forEach(function (item) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
-      $.ext(db[_name], new DbOpt(mysql, _name))
+      co(function * () {
+        let _field = (yield mysql.query(`desc ${_name};`)).map(item => {
+          return item['Field']
+        })
+        $.ext(db[_name], new DbOpt(mysql, _name, _field, exColumn))
+        db[_name].field = _field
+      })
       n++
     })
     db['_mysql'] = mysql
