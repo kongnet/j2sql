@@ -85,48 +85,48 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
           {
             let _preStr = '\''
             ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
-            _item = `${i}=${_preStr}${o[i]}${_preStr}`
+            _item = `\`${i}\`=${_preStr}${o[i]}${_preStr}`
             break
           }
         case 'number':
-          _item = `${i}=${o[i]}`
+          _item = `\`${i}\`=${o[i]}`
           break
         case 'boolean':
-          _item = `${i}=${o[i]}`
+          _item = `\`${i}\`=${o[i]}`
           break
         case 'object':
           {
             if (type === 'update') {
               let _preStr = o[i] instanceof Date ? '' : '\''
-              _item = `${i} = ${o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'}`
+              _item = `\`${i}\` = ${o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'}`
               break
             }
             if (!o[i]) {
               // NOTICE: 不能严格等于
-              _item = `${i} is NULL`
+              _item = `\`${i}\` is NULL`
               break
             }
             if (o[i] instanceof Date) {
-              _item = `${i}='${o[i].date2Str()}'`
+              _item = `\`${i}\`='${o[i].date2Str()}'`
               break
             }
             if (o[i] instanceof Array) {
-              _item = `${i} in ${JSON.stringify(o[i]).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '\'')}`
+              _item = `\`${i}\` in ${JSON.stringify(o[i]).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '\'')}`
               break
             }
             if (o[i] instanceof RegExp) {
-              _item = `${i} like '${o[i].toString().replaceAll('/g', '').replaceAll('/', '')}'`
+              _item = `\`${i}\` like '${o[i].toString().replaceAll('/g', '').replaceAll('/', '')}'`
               break
             }
             let _objAry = []
             for (let i2 in o[i]) {
-              _objAry.push(`${i}${i2}${o[i][i2]}`)
+              _objAry.push(`\`${i}\`${i2}${o[i][i2]}`)
             }
             _item = _objAry.join(' and ')
             break
           }
         case 'undefined':
-          _item = `${i} = NULL`
+          _item = `\`${i}\` = NULL`
           break
         default:
       }
@@ -148,7 +148,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     let orderStr = ''
     let limitStr = +d
     for (let i in c) {
-      order.push(i + ` ${(+c[i]) === -1 ? 'desc' : 'asc'}`)
+      order.push('`' + i + '`' + ` ${(+c[i]) === -1 ? 'desc' : 'asc'}`)
     }
     orderStr = order.join(', ')
     // if (b === 0) b = _columnFilter(b) //TODO: 列可见性加强
@@ -157,7 +157,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     }
     colsStr = cols.join(',')
     whereStr = me.where(a).join(' and ')
-    sql += `select ${colsStr || '*'} from ${_name}${whereStr ? ' where ' + whereStr : ''}${orderStr ? ' order by ' + orderStr : ''}${limitStr ? (' limit ' + limitStr) : ''};`
+    sql += `select ${colsStr || '*'} from \`${_name}\`${whereStr ? ' where ' + whereStr : ''}${orderStr ? ' order by ' + orderStr : ''}${limitStr ? (' limit ' + limitStr) : ''};`
     return me
   }
   me.findOne = function (a, b, c) {
@@ -166,7 +166,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
   me.remove = function (a, ifEmpty) {
     let whereStr = me.where(a).join(' and ')
     if (whereStr || (ifEmpty && !whereStr)) {
-      sql += `delete from ${_name}${whereStr ? ' where ' + whereStr : ''};`
+      sql += `delete from \`${_name}\`${whereStr ? ' where ' + whereStr : ''};`
       return me
     } else {
       sql += '[Empty!!]'
@@ -181,7 +181,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       return me
     }
     if (whereStr || (ifEmpty && !whereStr)) {
-      sql += `update ${_name} set ${colsStr}${whereStr ? ' where ' + whereStr : ''};`
+      sql += `update \`${_name}\` set ${colsStr}${whereStr ? ' where ' + whereStr : ''};`
       return me
     } else {
       sql += '[Empty!!]'
@@ -210,7 +210,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       sql += '[Empty!!]'
     } else {
       if (!uniqCol) {
-        sql += `insert into ${_name} (${colsStr}) values (${valuesStr});`
+        sql += `insert into \`${_name}\` (${colsStr}) values (${valuesStr});`
       } else {
         let _v = me.where({
           'c': a[uniqCol]
@@ -218,7 +218,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         let _a = _v[0].split('=')
         _a.shift(0)
         let _c = _a.join('=')
-        sql += `insert into ${_name} (${colsStr}) select ${valuesStr} from ${_name} WHERE NOT EXISTS(SELECT ${uniqCol} FROM ${_name} WHERE ${uniqCol} = ${_c}) limit 1;`
+        sql += `insert into \`${_name}\` (${colsStr}) select ${valuesStr} from \`${_name}\` WHERE NOT EXISTS(SELECT \`${uniqCol}\` FROM \`${_name}\` WHERE \`${uniqCol}\` = ${_c}) limit 1;`
       }
     }
     return me
@@ -264,7 +264,7 @@ function getDB (dbObj) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
       co(function * () {
-        let _field = (yield mysql.query(`desc ${_name};`)).map(item => {
+        let _field = (yield mysql.query(`desc \`${_name}\`;`)).map(item => {
           return item['Field']
         })
         $.ext(db[_name], new DbOpt(mysql, _name, _field, exColumn))
