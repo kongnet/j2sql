@@ -164,6 +164,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
   it('5.cmd测试', function * () {
     assert.strictEqual(db.test.cmd('show databases;').get(), 'show databases;')
     assert.strictEqual(db.test.cmd('show databases').get(), 'show databases;')
+    assert.strictEqual(db.cmd('show databases').get(), 'show databases;')
   })
   it('6.特殊类型函数条件测试', function * () {
     assert.strictEqual(db.test.R({
