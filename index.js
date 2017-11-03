@@ -286,8 +286,6 @@ function getDB (dbObj) {
       })
       n++
     })
-  }).then(function () {
-
   })
   return db
 }

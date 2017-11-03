@@ -24,7 +24,7 @@ co(function* () {
 }); */
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
   before(function * () {
-    yield $.tools.wait(1000)
+    yield $.tools.wait(2000)
   })
   it('1.find&findone测试', function * () {
     assert.strictEqual(db.test.find().get(), 'select * from `test`;')
