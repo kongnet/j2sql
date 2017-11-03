@@ -18,7 +18,8 @@
     "meeko": "*",
     "co": "*",
     "mysql": "*",
-    "co-mysql": "*"
+    "co-mysql": "*",
+    "bluebird": "*"
   },
   "devDependencies": {
     "standard": "*",
