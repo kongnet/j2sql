@@ -274,11 +274,12 @@ function getDB (dbObj) {
         unLoadTable--
         db['_nowPercent'] = ~~((tableSize - unLoadTable) / tableSize * 100)
         $.option.logTime = false
-        $.log('DB Obj loading =>', db['_nowPercent'], '%')
+        // $.log('DB Obj loading =>', db['_nowPercent'], '%')
         $.option.logTime = true
         if (unLoadTable <= 0) {
-          $.log(`<--- J2sql [${$.c.yellow}${n}${$.c.none} tables] Obj Init finished.`)
+          $.log(`<--- J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables] Obj Init finished.`)
           db['_mysql'] = mysql
+          db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
         } else {
 
         }
