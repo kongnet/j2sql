@@ -1,6 +1,6 @@
 'use strict'
 let $ = require('meeko')
-let co = require('hprose').co
+let co = require('co')
 let pack = require('./package.json')
 
 let DbOpt = function (mysql, tbName, field, exColumn) {
