@@ -2,7 +2,7 @@
 let $ = require('meeko')
 let co = require('co')
 let pack = require('./package.json')
-
+global.Promise = require('bluebird')
 let DbOpt = function (mysql, tbName, field, exColumn) {
   let me = this
   let sql = ''
