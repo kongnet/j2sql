@@ -155,11 +155,11 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     assert.strictEqual(db.test.insert({
       cell: '1',
       'phone': 1
-    }, 'phone').get(), 'insert into `test` (`cell`,`phone`) select \'1\',1 from `test` WHERE NOT EXISTS(SELECT `phone` FROM `test` WHERE `phone` = 1) limit 1;')
+    }, 'phone').get(), 'insert into `test` (`cell`,`phone`) select \'1\',1 from dual WHERE NOT EXISTS(SELECT `phone` FROM `test` WHERE `phone` = 1) limit 1;')
     assert.strictEqual(db.test.insert({
       cell: '1',
       'phone': 1
-    }, 'cell').get(), 'insert into `test` (`cell`,`phone`) select \'1\',1 from `test` WHERE NOT EXISTS(SELECT `cell` FROM `test` WHERE `cell` = \'1\') limit 1;')
+    }, 'cell').get(), 'insert into `test` (`cell`,`phone`) select \'1\',1 from dual WHERE NOT EXISTS(SELECT `cell` FROM `test` WHERE `cell` = \'1\') limit 1;')
   })
   it('5.cmd测试', function * () {
     assert.strictEqual(db.test.cmd('show databases;').get(), 'show databases;')
@@ -198,7 +198,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get())
   })
   it('7.exec测试', function * () {
-    let rs = yield db._mysql.query('select `id` from `test` limit 1;')
+    let rs = yield db.cmd('select `id` from `test` limit 1;').exec()
     let obj = yield db.test.R({
       id: rs[0].id
     }, {}, {}, 1).exec()
