@@ -1,8 +1,8 @@
 'use strict'
 let $ = require('meeko')
-let co = require('co')
+let co = require('hprose').co
 let pack = require('./package.json')
-global.Promise = require('bluebird')
+
 let DbOpt = function (mysql, tbName, field, exColumn) {
   let me = this
   let sql = ''
@@ -76,6 +76,9 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       }
     }
   }
+  me.run = co.wrap(function * (ifTrans, ifShowSql) {
+    return yield me.exec(ifTrans, ifShowSql)
+  })
   me.where = function (o, type) {
     let _item
     let a = []
@@ -218,7 +221,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         let _a = _v[0].split('=')
         _a.shift(0)
         let _c = _a.join('=')
-        sql += `insert into \`${_name}\` (${colsStr}) select ${valuesStr} from \`${_name}\` WHERE NOT EXISTS(SELECT \`${uniqCol}\` FROM \`${_name}\` WHERE \`${uniqCol}\` = ${_c}) limit 1;`
+        sql += `insert into \`${_name}\` (${colsStr}) select ${valuesStr} from dual WHERE NOT EXISTS(SELECT \`${uniqCol}\` FROM \`${_name}\` WHERE \`${uniqCol}\` = ${_c}) limit 1;`
       }
     }
     return me
@@ -286,6 +289,8 @@ function getDB (dbObj) {
       })
       n++
     })
+  }).then(function () {
+
   })
   return db
 }
