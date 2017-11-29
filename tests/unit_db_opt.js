@@ -219,6 +219,6 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       idx: 1001
     }, {}, {}, 1).exec(true, true)
     assert.strictEqual(obj, -1)
-    process.exit(0);
+    process.exit(0)
   })
 })

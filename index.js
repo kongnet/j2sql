@@ -252,13 +252,14 @@ function getDB (dbObj) {
   let [mysqlWrapper, Mysql] = [require('co-mysql'), require('mysql')]
   let pool = Mysql.createPool(dbObj)
   let mysql = mysqlWrapper(pool)
+  $.option.logTime = false
   pool.on('connection', function () {
     // $.log(`<-- J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] pool connect!`)
   })
   pool.on('enqueue', function () {
     // $.log('<-- J2sql pool enqueue!')
   })
-  $.log('--> J2sql Obj Init start...')
+    // $.log('--> J2sql Obj Init start...')
   let [_r, n] = [0, 0]
   let db = {}
   co(function * () {
@@ -276,13 +277,12 @@ function getDB (dbObj) {
         db[_name].field = _field
         unLoadTable--
         db['_nowPercent'] = ~~((tableSize - unLoadTable) / tableSize * 100)
-        $.option.logTime = false
         // $.log('DB Obj loading =>', db['_nowPercent'], '%')
-        $.option.logTime = true
         if (unLoadTable <= 0) {
-          $.log(`<--- J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables] Obj Init finished.`)
+          $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables] Obj Init finished.`)
           db['_mysql'] = mysql
           db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
+          $.option.logTime = true
         } else {
 
         }
