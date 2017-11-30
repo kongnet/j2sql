@@ -260,12 +260,23 @@ function getDB (dbObj) {
     // $.log('<-- J2sql pool enqueue!')
   })
     // $.log('--> J2sql Obj Init start...')
+  function finishLoadDB (n, mysql, _name, _field, exColumn) {
+    $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables]`)
+    db['_mysql'] = mysql
+    db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
+    $.option.logTime = true
+  }
   let [_r, n] = [0, 0]
   let db = {}
   co(function * () {
     _r = yield mysql.query(`use ${dbName};show tables;`)
     let tableSize = _r[1].length
     let unLoadTable = tableSize
+    if (tableSize === 0) {
+      $.log($.c.r('✘'), `J2sql (${pack.version}) [${$.c.yellow}${0}${$.c.none} tables]`)
+      return
+    }
+    $.log('asdfasdfasdfasdfasdfsadfasdfasdfa', unLoadTable)
     _r[1].forEach(function (item) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
@@ -279,10 +290,7 @@ function getDB (dbObj) {
         db['_nowPercent'] = ~~((tableSize - unLoadTable) / tableSize * 100)
         // $.log('DB Obj loading =>', db['_nowPercent'], '%')
         if (unLoadTable <= 0) {
-          $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables] Obj Init finished.`)
-          db['_mysql'] = mysql
-          db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
-          $.option.logTime = true
+          finishLoadDB(n, mysql, _name, _field, exColumn)
         } else {
 
         }
@@ -291,6 +299,8 @@ function getDB (dbObj) {
     })
   }).then(function () {
 
+  }).catch(function (e) {
+    $.err(e.stack)
   })
   return db
 }
