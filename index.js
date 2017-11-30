@@ -276,7 +276,6 @@ function getDB (dbObj) {
       $.log($.c.r('✘'), `J2sql (${pack.version}) [${$.c.yellow}${0}${$.c.none} tables]`)
       return
     }
-    $.log('asdfasdfasdfasdfasdfsadfasdfasdfa', unLoadTable)
     _r[1].forEach(function (item) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
