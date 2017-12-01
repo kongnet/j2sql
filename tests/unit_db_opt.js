@@ -6,7 +6,7 @@ let assert = require('assert')
 let $ = require('meeko')
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
-/* let co = require('hprose').co
+/* let co = require('co')
 co(function* () {
   yield $.tools.wait(1000);
   let r = db.test.R({
@@ -22,11 +22,22 @@ co(function* () {
   }).get()
   $.log(r)
 }); */
-describe('mongoDB转MySQL增删改查基础的单元测试', function () {
-  before(function * () {
-    yield $.tools.wait(2000)
+function wait (t) {
+  return new Promise((resolve, reject) => {
+    try {
+      setTimeout(() => {
+        resolve()
+      }, t)
+    } catch (err) {
+      reject(err)
+    }
   })
-  it('1.find&findone测试', function * () {
+}
+describe('mongoDB转MySQL增删改查基础的单元测试', function () {
+  before(async () => {
+    await wait(1000)
+  })
+  it('1.find&findone测试', async () => {
     assert.strictEqual(db.test.find().get(), 'select * from `test`;')
     assert.strictEqual(db.test.R().get(), 'select * from `test`;')
     assert.strictEqual(db.test.select().get(), 'select * from `test`;')
@@ -56,7 +67,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), 'select * from `test` where `cell`=true;')
   })
 
-  it('2.remove测试', function * () {
+  it('2.remove测试', async () => {
     assert.strictEqual(db.test.remove().get(), '[Empty!!]')
     assert.strictEqual(db.test.remove({}, 1).get(), 'delete from `test`;')
     assert.strictEqual(db.test.D({}, 1).get(), 'delete from `test`;')
@@ -69,7 +80,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), 'delete from `test` where `time`>=123 and `time`<1000;')
   })
 
-  it('3.update测试', function * () {
+  it('3.update测试', async () => {
     assert.strictEqual(db.test.U({
       id: 11
     }).get(), '[Empty!!]')
@@ -97,7 +108,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), 'update `test` set `cell`=1,`min(id)`=1 where `time`>=123 and `time`<1000;')
   })
 
-  it('4.insert测试', function * () {
+  it('4.insert测试', async () => {
     assert.strictEqual(db.test.insert().get(), '[Empty!!]')
     assert.strictEqual(db.test.insert({
       cell: 1,
@@ -151,7 +162,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'd1': /kong+/g
     }).get(), 'insert into `test` (`cell`,`d1`) values (\'1\', \'{}\');')
   })
-  it('4-1.insert唯一插入测试', function * () {
+  it('4-1.insert唯一插入测试', async () => {
     assert.strictEqual(db.test.insert({
       cell: '1',
       'phone': 1
@@ -161,12 +172,12 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'phone': 1
     }, 'cell').get(), 'insert into `test` (`cell`,`phone`) select \'1\',1 from dual WHERE NOT EXISTS(SELECT `cell` FROM `test` WHERE `cell` = \'1\') limit 1;')
   })
-  it('5.cmd测试', function * () {
+  it('5.cmd测试', async () => {
     assert.strictEqual(db.test.cmd('show databases;').get(), 'show databases;')
     assert.strictEqual(db.test.cmd('show databases').get(), 'show databases;')
     assert.strictEqual(db.cmd('show databases').get(), 'show databases;')
   })
-  it('6.特殊类型函数条件测试', function * () {
+  it('6.特殊类型函数条件测试', async () => {
     assert.strictEqual(db.test.R({
       'ax(id)': 1
     }).get(), 'select * from `test` where `ax(id)`=1;')
@@ -197,7 +208,30 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       'name': [1, 'x', 3]
     }).get())
   })
-  it('7.exec测试', function * () {
+  it('7.run测试', async () => {
+    let rs = await db.cmd('select `id` from `test` limit 1;').run()
+    let obj = await db.test.R({
+      id: rs[0].id
+    }, {}, {}, 1).run()
+    assert.strictEqual(obj[0].id, rs[0].id)
+    obj = await db.test.R({
+      id: rs[0].id
+    }, {}, {}, 1).run(true, true)
+    assert.strictEqual(obj[1][0].id, rs[0].id)
+    obj = await db.test.R({
+      idx: 1001
+    }, {}, {}, 1).run()
+    assert.strictEqual(obj, -1)
+    obj = await db.test.R({
+      id: rs[0].id
+    }, {}, {}, 1).run(true)
+    assert.strictEqual(obj[1][0].id, rs[0].id)
+    obj = await db.test.R({
+      idx: 1001
+    }, {}, {}, 1).run(true, true)
+    assert.strictEqual(obj, -1)
+  })
+  it('8.exec测试', function * () {
     let rs = yield db.cmd('select `id` from `test` limit 1;').exec()
     let obj = yield db.test.R({
       id: rs[0].id
