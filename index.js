@@ -7,10 +7,10 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
   let me = this
   let sql = ''
   let _name = tbName
-/*
-  TODO: 列可见性
-  let ex = exColumn || {'d_flag': 1, 'm_time': 1, 'w_state': 1, 'name': 1}
-  let tableField = field */
+  /*
+TODO: 列可见性
+let ex = exColumn || {'d_flag': 1, 'm_time': 1, 'w_state': 1, 'name': 1}
+let tableField = field */
   function _log (sql, ifShowSql) {
     if (ifShowSql) {
       $.option.logTime = false
@@ -18,22 +18,22 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       $.option.logTime = true
     }
   }
-/*
+  /*
 
- TODO: 列可见性
-  function _columnFilter (colObj) {
-    let o = {}
-    tableField.map(item => {
-      if (!ex[item]) o[item] = 1
-    })
-    for (let i in colObj) {
-      if (colObj[i] === 1 && ex[i] === 1) o[i] = 1
-    }
+TODO: 列可见性
+function _columnFilter (colObj) {
+let o = {}
+tableField.map(item => {
+if (!ex[item]) o[item] = 1
+})
+for (let i in colObj) {
+if (colObj[i] === 1 && ex[i] === 1) o[i] = 1
+}
 
-    return o
-  } */
+return o
+} */
   me.get = function () {
-      // 返回生成的sql
+    // 返回生成的sql
     let s = sql
     sql = ''
     return s
@@ -57,7 +57,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         let err = e.toString()
         new RegExp('(.+)', 'gm').test(err)
         let light = RegExp.$1
-            // NOTICE:不要使用ctrl+alt+F 格式化代码
+        // NOTICE:不要使用ctrl+alt+F 格式化代码
         $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm, `${$.c.yellow}$1${$.c.none}`)}`)
         $.log(`${$.c.green}Rollback${$.c.none}`)
         return -1
@@ -70,7 +70,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         let err = e.toString()
         new RegExp('\'([^\']+)\'', 'gm').test(err)
         let light = RegExp.$1
-          // NOTICE:不要使用ctrl+alt+F 格式化代码
+        // NOTICE:不要使用ctrl+alt+F 格式化代码
         $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('[^']+')/gm, `${$.c.yellow}$1${$.c.none}`)}`)
         return -1
       }
@@ -85,12 +85,12 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     for (let i in o) {
       switch (typeof o[i]) {
         case 'string':
-          {
-            let _preStr = '\''
-            ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
-            _item = `\`${i}\`=${_preStr}${o[i]}${_preStr}`
-            break
-          }
+        {
+          let _preStr = '\''
+;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
+          _item = `\`${i}\`=${_preStr}${o[i]}${_preStr}`
+          break
+        }
         case 'number':
           _item = `\`${i}\`=${o[i]}`
           break
@@ -98,36 +98,36 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
           _item = `\`${i}\`=${o[i]}`
           break
         case 'object':
-          {
-            if (type === 'update') {
-              let _preStr = o[i] instanceof Date ? '' : '\''
-              _item = `\`${i}\` = ${o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'}`
-              break
-            }
-            if (!o[i]) {
-              // NOTICE: 不能严格等于
-              _item = `\`${i}\` is NULL`
-              break
-            }
-            if (o[i] instanceof Date) {
-              _item = `\`${i}\`='${o[i].date2Str()}'`
-              break
-            }
-            if (o[i] instanceof Array) {
-              _item = `\`${i}\` in ${JSON.stringify(o[i]).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '\'')}`
-              break
-            }
-            if (o[i] instanceof RegExp) {
-              _item = `\`${i}\` like '${o[i].toString().replaceAll('/g', '').replaceAll('/', '')}'`
-              break
-            }
-            let _objAry = []
-            for (let i2 in o[i]) {
-              _objAry.push(`\`${i}\`${i2}${o[i][i2]}`)
-            }
-            _item = _objAry.join(' and ')
+        {
+          if (type === 'update') {
+            let _preStr = o[i] instanceof Date ? '' : '\''
+            _item = `\`${i}\` = ${o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'}`
             break
           }
+          if (!o[i]) {
+            // NOTICE: 不能严格等于
+            _item = `\`${i}\` is NULL`
+            break
+          }
+          if (o[i] instanceof Date) {
+            _item = `\`${i}\`='${o[i].date2Str()}'`
+            break
+          }
+          if (o[i] instanceof Array) {
+            _item = `\`${i}\` in ${JSON.stringify(o[i]).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '\'')}`
+            break
+          }
+          if (o[i] instanceof RegExp) {
+            _item = `\`${i}\` like '${o[i].toString().replaceAll('/g', '').replaceAll('/', '')}'`
+            break
+          }
+          let _objAry = []
+          for (let i2 in o[i]) {
+            _objAry.push(`\`${i}\`${i2}${o[i][i2]}`)
+          }
+          _item = _objAry.join(' and ')
+          break
+        }
         case 'undefined':
           _item = `\`${i}\` = NULL`
           break
@@ -139,11 +139,11 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
   }
   me.find = function (a, b, c, d) {
     /*
-      a where
-      b col
-      c order by
-      d limit
-    */
+a where
+b col
+c order by
+d limit
+*/
     let cols = []
     let colsStr = ''
     let whereStr = ''
@@ -259,7 +259,7 @@ function getDB (dbObj) {
   pool.on('enqueue', function () {
     // $.log('<-- J2sql pool enqueue!')
   })
-    // $.log('--> J2sql Obj Init start...')
+  // $.log('--> J2sql Obj Init start...')
   function finishLoadDB (n, mysql, _name, _field, exColumn) {
     $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables]`)
     db['_mysql'] = mysql
@@ -299,7 +299,7 @@ function getDB (dbObj) {
   }).then(function () {
 
   }).catch(function (e) {
-    $.err(e.stack)
+    $.log($.c.r('✘'), `Mysql: ${e.message}`)
   })
   return db
 }
