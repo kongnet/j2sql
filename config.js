@@ -10,13 +10,13 @@ var configObj = {
       inHost: '127.0.0.1',
       port: 13100,
       mysql: {
-        host: '192.168.10.186', // '192.168.10.186',
+        host: '127.0.0.1', // '192.168.10.186',
         port: 3306,
         pool: 1000,
         timeout: 500000,
         user: 'zc_test',
-        password: 'zc_test2016',
-        database: 'ips',
+        password: 'zc_test2018test',
+        database: 'ali_share',
         multipleStatements: true
       }
     }

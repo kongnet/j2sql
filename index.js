@@ -261,7 +261,7 @@ function getDB (dbObj) {
   })
   // $.log('--> J2sql Obj Init start...')
   function finishLoadDB (n, mysql, _name, _field, exColumn) {
-    $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${n}${$.c.none} tables]`)
+    $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] [${$.c.yellow}${n}${$.c.none}] tables`)
     db['_mysql'] = mysql
     db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
     $.option.logTime = true
