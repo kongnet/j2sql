@@ -1,6 +1,6 @@
 {
   "name": "j2sql",
-  "version": "1.9.15",
+  "version": "1.9.16",
   "description": "j2sql自用函数",
   "main": "index.js",
   "scripts": {
