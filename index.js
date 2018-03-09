@@ -8,9 +8,9 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
   let sql = ''
   let _name = tbName
   /*
-TODO: 列可见性
-let ex = exColumn || {'d_flag': 1, 'm_time': 1, 'w_state': 1, 'name': 1}
-let tableField = field */
+  TODO: 列可见性
+  let ex = exColumn || {'d_flag': 1, 'm_time': 1, 'w_state': 1, 'name': 1}
+  let tableField = field */
   function _log (sql, ifShowSql) {
     if (ifShowSql) {
       $.option.logTime = false
@@ -20,18 +20,18 @@ let tableField = field */
   }
   /*
 
-TODO: 列可见性
-function _columnFilter (colObj) {
-let o = {}
-tableField.map(item => {
-if (!ex[item]) o[item] = 1
-})
-for (let i in colObj) {
-if (colObj[i] === 1 && ex[i] === 1) o[i] = 1
-}
+  TODO: 列可见性
+  function _columnFilter (colObj) {
+  let o = {}
+  tableField.map(item => {
+  if (!ex[item]) o[item] = 1
+  })
+  for (let i in colObj) {
+  if (colObj[i] === 1 && ex[i] === 1) o[i] = 1
+  }
 
-return o
-} */
+  return o
+  } */
   me.get = function () {
     // 返回生成的sql
     let s = sql
@@ -87,7 +87,7 @@ return o
         case 'string':
         {
           let _preStr = '\''
-;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
+          ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
           _item = `\`${i}\`=${_preStr}${o[i]}${_preStr}`
           break
         }
@@ -139,11 +139,11 @@ return o
   }
   me.find = function (a, b, c, d) {
     /*
-a where
-b col
-c order by
-d limit
-*/
+    a where
+    b col
+    c order by
+    d limit
+    */
     let cols = []
     let colsStr = ''
     let whereStr = ''
@@ -249,7 +249,7 @@ d limit
 function getDB (dbObj) {
   let dbName = dbObj.database || 'test'
   let exColumn = dbObj.exColumn
-  let [mysqlWrapper, Mysql] = [require('co-mysql'), require('mysql')]
+  let [mysqlWrapper, Mysql] = [require('co-mysql'), require('promise-mysql')]
   let pool = Mysql.createPool(dbObj)
   let mysql = mysqlWrapper(pool)
   $.option.logTime = false
@@ -262,7 +262,7 @@ function getDB (dbObj) {
   // $.log('--> J2sql Obj Init start...')
   function finishLoadDB (n, mysql, _name, _field, exColumn) {
     $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] [${$.c.yellow}${n}${$.c.none}] tables`)
-    db['_mysql'] = mysql
+    db['_mysql'] = pool
     db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
     $.option.logTime = true
   }

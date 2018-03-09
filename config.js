@@ -13,6 +13,7 @@ var configObj = {
         host: '127.0.0.1', // '192.168.10.186',
         port: 3306,
         pool: 1000,
+        connectionLimit: 1000,
         timeout: 500000,
         user: 'zc_test',
         password: 'zc_test2018test',

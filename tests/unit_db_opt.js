@@ -38,6 +38,7 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     await wait(1000)
   })
   it('1.find&findone测试', async () => {
+    // console.log(db._mysql)
     assert.strictEqual(db.test.find().get(), 'select * from `test`;')
     assert.strictEqual(db.test.R().get(), 'select * from `test`;')
     assert.strictEqual(db.test.select().get(), 'select * from `test`;')
@@ -253,6 +254,5 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
       idx: 1001
     }, {}, {}, 1).exec(true, true)
     assert.strictEqual(obj, -1)
-    process.exit(0)
   })
 })
