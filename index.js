@@ -123,7 +123,9 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
           }
           let _objAry = []
           for (let i2 in o[i]) {
-            _objAry.push(`\`${i}\`${i2}${o[i][i2]}`)
+            let _preStr = '\''
+            ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
+            _objAry.push(`\`${i}\`${i2}${_preStr}${o[i][i2]}${_preStr}`)
           }
           _item = _objAry.join(' and ')
           break
