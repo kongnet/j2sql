@@ -86,9 +86,9 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       switch (typeof o[i]) {
         case 'string':
         {
-          let _preStr = '\''
-          ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
-          _item = `\`${i}\`=${_preStr}${o[i]}${_preStr}`
+          let _pre = '\''
+          ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_pre = '') // NOTICE: 注意前面的分号
+          _item = `\`${i}\`=${_pre}${o[i]}${_pre}`
           break
         }
         case 'number':
@@ -123,9 +123,9 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
           }
           let _objAry = []
           for (let i2 in o[i]) {
-            let _preStr = (typeof o[i][i2] === 'string') ? '\'' : ''
-            ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_preStr = '') // NOTICE: 注意前面的分号
-            _objAry.push(`\`${i}\`${i2}${_preStr}${o[i][i2]}${_preStr}`)
+            let _pre1 = (typeof o[i][i2] === 'string') ? '\'' : ''
+            let _pre2 = (/[0-9a-zA-z_]+\(.+\)/g).test(i) ? '' : '`'
+            _objAry.push(`${_pre2}${i}${_pre2}${i2}${_pre1}${o[i][i2]}${_pre1}`)
           }
           _item = _objAry.join(' and ')
           break

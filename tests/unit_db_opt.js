@@ -8,7 +8,7 @@ let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
 /* let co = require('co')
 co(function* () {
-  yield $.tools.wait(1000);
+  yield $.tools.$.wait(1000);
   let r = db.test.R({
     "aaa->'$[1].\"2\"'": "22",
     'x': 1
@@ -22,23 +22,16 @@ co(function* () {
   }).get()
   $.log(r)
 }); */
-function wait (t) {
-  return new Promise((resolve, reject) => {
-    try {
-      setTimeout(() => {
-        resolve()
-      }, t)
-    } catch (err) {
-      reject(err)
-    }
-  })
-}
+
 describe('mongoDB转MySQL增删改查基础的单元测试', function () {
   before(async () => {
-    await wait(1000)
+    await $.wait(1000)
   })
   it('1.find&findone测试', async () => {
     // console.log(db._mysql)
+    assert.strictEqual(db.test.R({
+      cell: true
+    }).get(), 'select * from `test` where `cell`=true;')
     assert.strictEqual(db.test.find().get(), 'select * from `test`;')
     assert.strictEqual(db.test.R().get(), 'select * from `test`;')
     assert.strictEqual(db.test.select().get(), 'select * from `test`;')
@@ -48,6 +41,18 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
         '<': 1000
       }
     }).get(), 'select * from `test` where `time`>=123 and `time`<1000;')
+    assert.strictEqual(db.test.find({
+      'time': {
+        '>=': 'x123',
+        '<': 'x1000'
+      }
+    }).get(), 'select * from `test` where `time`>=\'x123\' and `time`<\'x1000\';')
+    assert.strictEqual(db.test.find({
+      'min(a)+1': {
+        '>=': 'x123',
+        '<': 'x1000'
+      }
+    }).get(), 'select * from `test` where min(a)+1>=\'x123\' and min(a)+1<\'x1000\';')
     assert.strictEqual(db.test.find({}, {
       cell: 1,
       'min(id)': 1
@@ -63,9 +68,6 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get(), "select * from `test` where `cell`='13052000000';", db.test.R({
       cell: '13052000000'
     }).get())
-    assert.strictEqual(db.test.R({
-      cell: true
-    }).get(), 'select * from `test` where `cell`=true;')
   })
 
   it('2.remove测试', async () => {
@@ -210,6 +212,14 @@ describe('mongoDB转MySQL增删改查基础的单元测试', function () {
     }).get())
   })
   it('7.run测试', async () => {
+    /*     let r = (async function () {
+      let pool = db._mysql
+      let conn = await pool.getConnection()
+      let r = await conn.query('select 1')
+      await conn.release()
+      return r
+    })()
+    $.log('rrrrrrrr', await r) */
     let rs = await db.cmd('select `id` from `test` limit 1;').run()
     let obj = await db.test.R({
       id: rs[0].id
