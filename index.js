@@ -271,7 +271,7 @@ function getDB (dbObj) {
   let [_r, n] = [0, 0]
   let db = {}
   co(function * () {
-    _r = yield mysql.query(`use ${dbName};show tables;`)
+    _r = yield mysql.query(`use \`${dbName}\`;show tables;`)
     let tableSize = _r[1].length
     let unLoadTable = tableSize
     if (tableSize === 0) {
