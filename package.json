@@ -19,7 +19,7 @@
     "co": "*",
     "mysql": "*",
     "co-mysql": "*",
-    "promise-mysql": "*",
+    "promise-mysql": "3.3.2",
     "bluebird": "*"
   },
   "devDependencies": {
