@@ -15,9 +15,9 @@ var configObj = {
         pool: 1000,
         connectionLimit: 1000,
         timeout: 500000,
-        user: 'zc_test',
-        password: 'zc_test2018test',
-        database: 'ali_share',
+        user: 'root',
+        password: '123456',
+        database: 'test',
         multipleStatements: true
       }
     }

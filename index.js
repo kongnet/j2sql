@@ -58,8 +58,8 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         new RegExp('(.+)', 'gm').test(err)
         let light = RegExp.$1
         // NOTICE:不要使用ctrl+alt+F 格式化代码
-        $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('.+')/gm, `${$.c.yellow}$1${$.c.none}`)}`)
-        $.log(`${$.c.green}Rollback${$.c.none}`)
+        $.err(sql.replace(light, `${$.c.r(light)}`), `\n${err.replace(/('.+')/gm, `${$.c.y(RegExp.$1)}`)}`)
+        $.log(`${$.c.g('Rollback')}`)
         return -1
       }
     } else {
@@ -71,7 +71,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         new RegExp('\'([^\']+)\'', 'gm').test(err)
         let light = RegExp.$1
         // NOTICE:不要使用ctrl+alt+F 格式化代码
-        $.log(sql.replace(light, `${$.c.red}${light}${$.c.none}`), `\n${err.replace(/('[^']+')/gm, `${$.c.yellow}$1${$.c.none}`)}`)
+        $.err(sql.replace(light, `${$.c.r(light)}`), `\n${err.replace(/('[^']+')/gm, `${$.c.y(RegExp.$1)}`)}`)
         return -1
       }
     }
@@ -263,7 +263,7 @@ function getDB (dbObj) {
   })
   // $.log('--> J2sql Obj Init start...')
   function finishLoadDB (n, mysql, _name, _field, exColumn) {
-    $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.yellow}${dbObj.host} : ${dbObj.port}${$.c.none}] [${$.c.yellow}${n}${$.c.none}] tables`)
+    $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.y(`${dbObj.host} : ${dbObj.port}`)}] [${$.c.y(n)}] tables`)
     db['_mysql'] = pool
     db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
     $.option.logTime = true
@@ -275,7 +275,7 @@ function getDB (dbObj) {
     let tableSize = _r[1].length
     let unLoadTable = tableSize
     if (tableSize === 0) {
-      $.log($.c.r('✘'), `J2sql (${pack.version}) [${$.c.yellow}${0}${$.c.none} tables]`)
+      $.log($.c.r('✘'), `J2sql (${pack.version}) [${$.c.y(0)} tables]`)
       return
     }
     _r[1].forEach(function (item) {

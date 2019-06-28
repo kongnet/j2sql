@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "push": "npm version patch && npm publish . && git push",
+    "cz": "git add . && git status && git cz && npm version patch && npm publish .",
     "test": "standard *.js && istanbul cover ./node_modules/mocha/bin/_mocha -- -r co-mocha --reporter spec --timeout 100000 --recursive tests/",
     "coveralls": "istanbul cover _mocha -- -r co-mocha --reporter spec --timeout 100000 --recursive tests/ && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
@@ -23,11 +24,12 @@
     "bluebird": "*"
   },
   "devDependencies": {
-    "standard": "*",
-    "mocha": "*",
     "co-mocha": "*",
+    "coveralls": "*",
+    "cz-jt": "^0.1.7",
     "istanbul": "*",
-    "coveralls": "*"
+    "mocha": "*",
+    "standard": "*"
   },
   "eslintConfig": {
     "plugins": [
@@ -63,5 +65,10 @@
       ]
     },
     "extends": "eslint:recommended"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-jt"
+    }
   }
 }
