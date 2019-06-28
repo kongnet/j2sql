@@ -4,6 +4,7 @@
 'use strict'
 let assert = require('assert')
 let $ = require('meeko')
+global.$ = $
 let Config = require('../config.js')
 let db = require('../index')(Config.zc.mysql)
 /* let co = require('co')

@@ -1,5 +1,6 @@
+/* global $ */
 'use strict'
-let $ = require('meeko')
+// let $ = require('meeko') 作为全局 不在加载，否则会加载两次
 let co = require('co')
 let pack = require('./package.json')
 
