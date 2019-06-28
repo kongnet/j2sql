@@ -267,7 +267,6 @@ function getDB (dbObj) {
     $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.y(`${dbObj.host} : ${dbObj.port}`)}] [${$.c.y(n)}] tables`)
     db['_mysql'] = pool
     db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
-    $.option.logTime = true
   }
   let [_r, n] = [0, 0]
   let db = {}
