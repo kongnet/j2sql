@@ -16,25 +16,26 @@
   "author": "Kongnet <9601698@qq.com>",
   "license": "MIT",
   "dependencies": {
-    "meeko": "*",
+    "bluebird": "*",
     "co": "*",
-    "mysql": "*",
     "co-mysql": "*",
-    "promise-mysql": "3.3.2",
-    "bluebird": "*"
+    "meeko": "*",
+    "mysql": "*",
+    "promise-mysql": "3.3.2"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.2",
+    "cc-jt": "^0.1.2",
     "co-mocha": "*",
     "coveralls": "*",
     "cz-jt": "^0.1.7",
+    "eslint": "^6.0.1",
     "istanbul": "*",
     "mocha": "*",
     "standard": "*"
   },
   "eslintConfig": {
-    "plugins": [
-      "html"
-    ],
+    "plugins": [],
     "env": {
       "browser": true,
       "node": true,

@@ -282,11 +282,16 @@ function getDB (dbObj) {
       let _name = item['Tables_in_' + dbName]
       db[_name] = {}
       co(function * () {
-        let _field = (yield mysql.query(`desc \`${_name}\`;`)).map(item => {
-          return item['Field']
+        let _field = []
+        let _type = []
+
+         ;(yield mysql.query(`desc \`${_name}\`;`)).map(item => {
+          _field.push(item['Field'])
+          _type.push(item['Type'])
         })
         $.ext(db[_name], new DbOpt(mysql, _name, _field, exColumn))
         db[_name].field = _field
+        db[_name].type = _type
         unLoadTable--
         db['_nowPercent'] = ~~((tableSize - unLoadTable) / tableSize * 100)
         // $.log('DB Obj loading =>', db['_nowPercent'], '%')
