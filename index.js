@@ -40,7 +40,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     return s
   }
   me.cmd = function (s) {
-    let _tail = (~s.indexOf(';')) ? '' : ';'
+    let _tail = ~s.indexOf(';') ? '' : ';'
     sql += s + _tail
     return me
   }
@@ -59,7 +59,10 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         new RegExp('(.+)', 'gm').test(err)
         let light = RegExp.$1
         // NOTICE:不要使用ctrl+alt+F 格式化代码
-        $.err(sql.replace(light, `${$.c.r(light)}`), `\n${err.replace(/('.+')/gm, `${$.c.y(RegExp.$1)}`)}`)
+        $.err(
+          sql.replace(light, `${$.c.r(light)}`),
+          `\n${err.replace(/('.+')/gm, `${$.c.y(RegExp.$1)}`)}`
+        )
         $.log(`${$.c.g('Rollback')}`)
         return -1
       }
@@ -69,10 +72,13 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         return yield mysql.query(sql)
       } catch (e) {
         let err = e.toString()
-        new RegExp('\'([^\']+)\'', 'gm').test(err)
+        new RegExp("'([^']+)'", 'gm').test(err)
         let light = RegExp.$1
         // NOTICE:不要使用ctrl+alt+F 格式化代码
-        $.err(sql.replace(light, `${$.c.r(light)}`), `\n${err.replace(/('[^']+')/gm, `${$.c.y(RegExp.$1)}`)}`)
+        $.err(
+          sql.replace(light, `${$.c.r(light)}`),
+          `\n${err.replace(/('[^']+')/gm, `${$.c.y(RegExp.$1)}`)}`
+        )
         return -1
       }
     }
@@ -85,9 +91,8 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     let a = []
     for (let i in o) {
       switch (typeof o[i]) {
-        case 'string':
-        {
-          let _pre = '\''
+        case 'string': {
+          let _pre = "'"
           ;/[0-9a-zA-z_]+\(.+\)/g.test(o[i]) && (_pre = '') // NOTICE: 注意前面的分号
           _item = `\`${i}\`=${_pre}${o[i]}${_pre}`
           break
@@ -98,11 +103,12 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
         case 'boolean':
           _item = `\`${i}\`=${o[i]}`
           break
-        case 'object':
-        {
+        case 'object': {
           if (type === 'update') {
-            let _preStr = o[i] instanceof Date ? '' : '\''
-            _item = `\`${i}\` = ${o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'}`
+            let _preStr = o[i] instanceof Date ? '' : "'"
+            _item = `\`${i}\` = ${
+              o[i] ? _preStr + (JSON.stringify(o[i]) + _preStr) : 'NULL'
+            }`
             break
           }
           if (!o[i]) {
@@ -115,17 +121,23 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
             break
           }
           if (o[i] instanceof Array) {
-            _item = `\`${i}\` in ${JSON.stringify(o[i]).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '\'')}`
+            _item = `\`${i}\` in ${JSON.stringify(o[i])
+              .replaceAll('[', '(')
+              .replaceAll(']', ')')
+              .replaceAll('"', "'")}`
             break
           }
           if (o[i] instanceof RegExp) {
-            _item = `\`${i}\` like '${o[i].toString().replaceAll('/g', '').replaceAll('/', '')}'`
+            _item = `\`${i}\` like '${o[i]
+              .toString()
+              .replaceAll('/g', '')
+              .replaceAll('/', '')}'`
             break
           }
           let _objAry = []
           for (let i2 in o[i]) {
-            let _pre1 = (typeof o[i][i2] === 'string') ? '\'' : ''
-            let _pre2 = (/[0-9a-zA-z_]+\(.+\)/g).test(i) ? '' : '`'
+            let _pre1 = typeof o[i][i2] === 'string' ? "'" : ''
+            let _pre2 = /[0-9a-zA-z_]+\(.+\)/g.test(i) ? '' : '`'
             _objAry.push(`${_pre2}${i}${_pre2}${i2}${_pre1}${o[i][i2]}${_pre1}`)
           }
           _item = _objAry.join(' and ')
@@ -154,7 +166,7 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     let orderStr = ''
     let limitStr = +d
     for (let i in c) {
-      order.push('`' + i + '`' + ` ${(+c[i]) === -1 ? 'desc' : 'asc'}`)
+      order.push('`' + i + '`' + ` ${+c[i] === -1 ? 'desc' : 'asc'}`)
     }
     orderStr = order.join(', ')
     // if (b === 0) b = _columnFilter(b) //TODO: 列可见性加强
@@ -163,7 +175,11 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
     }
     colsStr = cols.join(',')
     whereStr = me.where(a).join(' and ')
-    sql += `select ${colsStr || '*'} from \`${_name}\`${whereStr ? ' where ' + whereStr : ''}${orderStr ? ' order by ' + orderStr : ''}${limitStr ? (' limit ' + limitStr) : ''};`
+    sql += `select ${colsStr || '*'} from \`${_name}\`${
+      whereStr ? ' where ' + whereStr : ''
+    }${orderStr ? ' order by ' + orderStr : ''}${
+      limitStr ? ' limit ' + limitStr : ''
+    };`
     return me
   }
   me.findOne = function (a, b, c) {
@@ -187,7 +203,9 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       return me
     }
     if (whereStr || (ifEmpty && !whereStr)) {
-      sql += `update \`${_name}\` set ${colsStr}${whereStr ? ' where ' + whereStr : ''};`
+      sql += `update \`${_name}\` set ${colsStr}${
+        whereStr ? ' where ' + whereStr : ''
+      };`
       return me
     } else {
       sql += '[Empty!!]'
@@ -218,13 +236,8 @@ let DbOpt = function (mysql, tbName, field, exColumn) {
       if (!uniqCol) {
         sql += `insert into \`${_name}\` (${colsStr}) values (${valuesStr});`
       } else {
-        let _v = me.where({
-          'c': a[uniqCol]
-        })
-        let _a = _v[0].split('=')
-        _a.shift(0)
-        let _c = _a.join('=')
-        sql += `insert into \`${_name}\` (${colsStr}) select ${valuesStr} from dual WHERE NOT EXISTS(SELECT \`${uniqCol}\` FROM \`${_name}\` WHERE \`${uniqCol}\` = ${_c}) limit 1;`
+        let v = typeof a[uniqCol] === 'string' ? `'${a[uniqCol]}'` : +a[uniqCol]
+        sql += `insert into \`${_name}\` (${colsStr}) select ${valuesStr} from dual WHERE NOT EXISTS(SELECT \`${uniqCol}\` FROM \`${_name}\` WHERE \`${uniqCol}\` = ${v}) limit 1;`
       }
     }
     return me
@@ -264,7 +277,12 @@ function getDB (dbObj) {
   })
   // $.log('--> J2sql Obj Init start...')
   function finishLoadDB (n, mysql, _name, _field, exColumn) {
-    $.log($.c.g('✔'), `J2sql (${pack.version}) [${$.c.y(`${dbObj.host} : ${dbObj.port}`)}] [${$.c.y(n)}] tables`)
+    $.log(
+      $.c.g('✔'),
+      `J2sql (${pack.version}) [${$.c.y(
+        `${dbObj.host} : ${dbObj.port}`
+      )}] [${$.c.y(n)}] tables`
+    )
     db['_mysql'] = pool
     db['cmd'] = new DbOpt(mysql, _name, _field, exColumn).cmd
   }
@@ -285,7 +303,7 @@ function getDB (dbObj) {
         let _field = []
         let _type = []
 
-         ;(yield mysql.query(`desc \`${_name}\`;`)).map(item => {
+        ;(yield mysql.query(`desc \`${_name}\`;`)).map(item => {
           _field.push(item['Field'])
           _type.push(item['Type'])
         })
@@ -293,21 +311,20 @@ function getDB (dbObj) {
         db[_name].field = _field
         db[_name].type = _type
         unLoadTable--
-        db['_nowPercent'] = ~~((tableSize - unLoadTable) / tableSize * 100)
+        db['_nowPercent'] = ~~(((tableSize - unLoadTable) / tableSize) * 100)
         // $.log('DB Obj loading =>', db['_nowPercent'], '%')
         if (unLoadTable <= 0) {
           finishLoadDB(n, mysql, _name, _field, exColumn)
         } else {
-
         }
       })
       n++
     })
-  }).then(function () {
-
-  }).catch(function (e) {
-    $.log($.c.r('✘'), `Mysql: ${e.message}`)
   })
+    .then(function () {})
+    .catch(function (e) {
+      $.log($.c.r('✘'), `Mysql: ${e.message}`)
+    })
   return db
 }
 module.exports = getDB
