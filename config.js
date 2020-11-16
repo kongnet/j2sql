@@ -39,6 +39,6 @@ var configObj = {
     }
   }
 }
-configObj[undefined] = configObj['dev']
+configObj[undefined] = configObj.dev
 
 module.exports = configObj[process.env.NODE_ENV]
